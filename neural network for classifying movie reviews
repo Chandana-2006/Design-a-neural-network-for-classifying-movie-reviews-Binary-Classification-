@@ -54,3 +54,66 @@ plt.ylabel('Accuracy')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+model.save("imdb_sentiment_model.h5")
+
+
+from tensorflow.keras.models import load_model
+# load the model
+loaded_model =load_model("imdb_sentiment_model.h5")
+
+word_index=imdb.get_word_index()
+
+def encode_review(text,word_index,max_words=10000):
+  tokens=text.lower().split()
+  encoded=[word_index.get(word,0) for word in tokens]
+  return encoded
+
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+def preprocess_text(text):
+  encoded=encode_review(text,word_index)
+  vectorized=np.zeros((1,10000))
+  for index in encoded:
+    if index<10000:
+      vectorized[0,index]=1
+    return vectorized
+
+# Example 1 prediction
+sample_text="This movie was fantastic and full of emotional depth"
+x_input=preprocess_text(sample_text)
+prediction=loaded_model.predict(x_input)
+
+# Interpret Prediction
+label="Positive" if prediction>=0.5 else "Negative"
+print(f"Sentiment :{label} (Confidence :{prediction[0][0]:.4f})")
+ 
+
+# Example 2 prediction
+sample_text="Top-notch music and an emotional climax that leaves you in awe!"
+x_input=preprocess_text(sample_text)
+prediction=loaded_model.predict(x_input)
+
+# Interpret Prediction
+label="Positive" if prediction>=0.5 else "Negative"
+print(f"Sentiment :{label} (Confidence :{prediction[0][0]:.4f})")
+
+# Example 3 prediction
+sample_text="I Kept checking my watch waiting for it to end!"
+x_input=preprocess_text(sample_text)
+prediction=loaded_model.predict(x_input)
+
+# Interpret Prediction
+label="Positive" if prediction>=0.5 else "Negative"
+print(f"Sentiment :{label} (Confidence :{prediction[0][0]:.4f})")
+
+
+# Example 4 prediction
+sample_text="Some parts were really engaging,but others were painfully slow."
+x_input=preprocess_text(sample_text)
+prediction=loaded_model.predict(x_input)
+
+# Interpret Prediction
+label="Positive" if prediction>=0.5 else "Negative"
+print(f"Sentiment :{label} (Confidence :{prediction[0][0]:.4f})")
+
